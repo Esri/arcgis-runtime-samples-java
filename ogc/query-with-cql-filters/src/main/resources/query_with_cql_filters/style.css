@@ -1,0 +1,12 @@
+.panel-region .label {
+  -fx-text-fill: white;
+}
+
+.label {
+  -fx-text-fill: black;
+}
+
+.date-picker .label {
+  -fx-text-fill: black;
+}
+

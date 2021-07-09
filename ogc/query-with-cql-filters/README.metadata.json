@@ -1,0 +1,36 @@
+{
+    "category": "OGC",
+    "description": "Query data from an OGC API feature service using CQL filters.",
+    "ignore": false,
+    "images": [
+        "QueryWithCQLFilters.png"
+    ],
+    "keywords": [
+        "browse",
+        "catalog",
+        "common query language",
+        "CQL",
+        "feature table",
+        "filter",
+        "OGC",
+        "OGC API",
+        "query",
+        "service",
+        "web",
+        "OgcFeatureCollectionTable",
+        "QueryParameters",
+        "TimeExtent"
+    ],
+    "redirect_from": "",
+    "relevant_apis": [
+        "OgcFeatureCollectionTable",
+        "QueryParameters",
+        "TimeExtent"
+    ],
+    "snippets": [
+        "src/main/java/com/esri/samples/query_with_cql_filters/QueryWithCqlFiltersController.java",
+        "src/main/java/com/esri/samples/query_with_cql_filters/QueryWithCqlFiltersSample.java",
+        "src/main/resources/query_with_cql_filters/main.fxml"
+    ],
+    "title": "Query with CQL filters"
+}

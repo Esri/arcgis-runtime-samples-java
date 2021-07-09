@@ -1,0 +1,89 @@
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
+}
+
+group = 'com.esri.samples'
+
+ext {
+    arcgisVersion = '100.11.2'
+}
+
+javafx {
+    version = "11.0.2"
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+
+compileJava.options.encoding = 'UTF-8'
+
+repositories {
+    jcenter()
+    maven {
+        url 'https://esri.jfrog.io/artifactory/arcgis'
+    }
+    maven {
+        url 'https://olympus.esri.com/artifactory/arcgisruntime-repo'
+    }
+}
+
+configurations {
+    natives
+}
+
+dependencies {
+    implementation "com.esri.arcgisruntime:arcgis-java:$arcgisVersion"
+    natives "com.esri.arcgisruntime:arcgis-java-jnilibs:$arcgisVersion"
+    natives "com.esri.arcgisruntime:arcgis-java-resources:$arcgisVersion"
+}
+
+task createGradlePropertiesAndWriteApiKey {
+    description = "Creates a new gradle.properties file with an empty API key variable in the user home ./gradle folder, if the file doesn't already exist."
+    group = "build"
+    def propertiesFile = new File("${System.properties.getProperty("user.home")}/.gradle/gradle.properties")
+    if (!propertiesFile.exists()) {
+        print("Go to " + new URL("https://developers.arcgis.com/dashboard") + " to get an API key.")
+        print(" Add your API key to ${System.properties.getProperty("user.home")}\\.gradle\\gradle.properties.")
+        propertiesFile.write("apiKey = ")
+    }
+}
+
+task copyNatives(type: Copy) {
+    description = "Copies the arcgis native libraries into the project build directory for development."
+    group = "build"
+    configurations.natives.asFileTree.each {
+        from(zipTree(it))
+    }
+    // store native libraries in a common location shared with other samples
+    into "${System.properties.getProperty("user.home")}/.arcgis/$arcgisVersion"
+}
+
+run {
+    doFirst {
+        // sets the API key from the gradle.properties file as a Java system property
+        systemProperty 'apiKey', apiKey
+    }
+    dependsOn copyNatives
+    mainClassName = 'com.esri.samples.query_with_cql_filters.QueryWithCqlFiltersLauncher'
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes("Main-Class": "$mainClassName")
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+task productionZip(type: Zip) {
+    group = 'distribution'
+    from copyNatives
+    from jar.destinationDirectory
+    into (project.name)
+    archiveBaseName = project.name
+}
+
+wrapper {
+    gradleVersion = '6.5.1'
+}
